@@ -1,0 +1,22 @@
+default: &default
+  adapter: postgresql
+  encoding: utf8mb4
+  pool: <%= ENV["DB_POOL"] || 5  %>
+  database: <%= ENV['DB_NAME'] || 'gifts-list-api_development' %>
+  username: <%= ENV['DB_USER'] || ENV['USER'] %>
+  password: <%= ENV['DB_PASS'] %>
+  host: <%= ENV["DB_HOST"] %>
+  url: <%= ENV['DATABASE_URL'] %> # takes higher precedence than other settings
+
+development:
+  <<: *default
+  database: <%= ENV['DB_NAME'] || 'gifts-list-api_development' %>
+
+test:
+  <<: *default
+  database: gifts-list-api_test
+
+production:
+  <<: *default
+  database: gifts-list-api_production
+  url: <%= ENV['DATABASE_URL'] %>
