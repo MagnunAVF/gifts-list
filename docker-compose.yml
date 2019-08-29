@@ -1,0 +1,15 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+  api:
+    build: ./gifts-list-api
+    command: bash -c "bundle exec jets server --host 0.0.0.0"
+    volumes:
+      - ./gifts-list-api:/gifts-list-api
+    ports:
+      - "8888:8888"
+    depends_on:
+      - db
