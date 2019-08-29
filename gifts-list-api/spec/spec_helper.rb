@@ -3,6 +3,7 @@ ENV["JETS_ENV"] ||= "test"
 # Ensures aws api never called. Fixture home folder does not contain ~/.aws/credentails
 ENV['HOME'] = "spec/fixtures/home"
 
+require 'faker'
 require "byebug"
 require "fileutils"
 require "jets"
