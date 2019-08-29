@@ -13,13 +13,17 @@ Jets.boot
 require "jets/spec_helpers"
 
 
-
 module Helpers
   def payload(name)
     JSON.load(IO.read("spec/fixtures/payloads/#{name}.json"))
   end
 end
 
-RSpec.configure do |c|
-  c.include Helpers
+RSpec.configure do |config|
+  config.include Helpers
+
+  config.include FactoryBot::Syntax::Methods
+  config.before(:suite) do
+    FactoryBot.find_definitions
+  end
 end
