@@ -3,13 +3,19 @@ services:
   db:
     image: postgres
     volumes:
-      - ./tmp/db:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
   api:
     build: ./gifts-list-api
-    command: bash -c "bundle exec jets server --host 0.0.0.0"
+    command: bash -c "
+      bundle exec jets db:drop &&
+      bundle exec jets db:create db:migrate db:seed &&
+      bundle exec jets server --host 0.0.0.0
+      "
     volumes:
       - ./gifts-list-api:/gifts-list-api
     ports:
       - "8888:8888"
     depends_on:
       - db
+volumes:
+  db-data:
