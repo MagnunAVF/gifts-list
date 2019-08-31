@@ -6,4 +6,6 @@ class Product < ApplicationRecord
   belongs_to :list
   has_many :product_category_association
   has_many :categories, through: :product_category_association
+  has_many :product_list_association
+  has_many :lists, through: :product_list_association
 end
