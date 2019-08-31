@@ -3,4 +3,5 @@ class Client < ApplicationRecord
 
   has_many :products
   has_many :categories
+  has_many :lists
 end

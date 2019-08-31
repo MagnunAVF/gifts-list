@@ -3,6 +3,7 @@ class Product < ApplicationRecord
   validates :price, numericality: { greater_than: 0 }
 
   belongs_to :client
+  belongs_to :list
   has_many :product_category_association
   has_many :categories, through: :product_category_association
 end
