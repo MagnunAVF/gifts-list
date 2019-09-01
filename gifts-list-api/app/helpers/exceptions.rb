@@ -34,4 +34,28 @@ module Exceptions
       "Category not found!"
     end
   end
+
+  class ProductNotInListError < StandardError
+    def message
+      "Product not in List!"
+    end
+  end
+
+  class ProductNotInCategoryError < StandardError
+    def message
+      "Product not in Category!"
+    end
+  end
+
+  class ProductAlreadyInListError < StandardError
+    def message
+      "Product already in List!"
+    end
+  end
+
+  class ProductAlreadyInCategoryError < StandardError
+    def message
+      "Product already in Category!"
+    end
+  end
 end
