@@ -4,4 +4,8 @@ class Client < ApplicationRecord
   has_many :products
   has_many :categories
   has_many :lists
+
+  def as_json(options = {})
+    super(only: [:id, :name])
+  end
 end
