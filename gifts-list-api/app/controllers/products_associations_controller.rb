@@ -4,7 +4,12 @@ class ProductsAssociationsController < ApplicationController
     product_exists_check
     list_exists_check
 
-    @list.products << @product
+    list_product_ids = @list.products.pluck(:id)
+    if list_product_ids.include?(@product.id)
+      raise ProductAlreadyInListError
+    else
+      @list.products << @product
+    end
 
     json_response({})
   end
@@ -14,7 +19,12 @@ class ProductsAssociationsController < ApplicationController
     product_exists_check
     list_exists_check
 
-    @list.products.delete(@product)
+    list_product_ids = @list.products.pluck(:id)
+    if !list_product_ids.include?(@product.id)
+      raise ProductNotInListError
+    else
+      @list.products.delete(@product)
+    end
 
     json_response({})
   end
@@ -24,7 +34,12 @@ class ProductsAssociationsController < ApplicationController
     product_exists_check
     category_exists_check
 
-    @category.products << @product
+    category_product_ids = @category.products.pluck(:id)
+    if category_product_ids.include?(@product.id)
+      raise ProductAlreadyInCategoryError
+    else
+      @category.products << @product
+    end
 
     json_response({})
   end
@@ -34,7 +49,12 @@ class ProductsAssociationsController < ApplicationController
     product_exists_check
     category_exists_check
 
-    @category.products.delete(@product)
+    category_product_ids = @category.products.pluck(:id)
+    if !category_product_ids.include?(@product.id)
+      raise ProductNotInCategoryError
+    else
+      @category.products.delete(@product)
+    end
 
     json_response({})
   end

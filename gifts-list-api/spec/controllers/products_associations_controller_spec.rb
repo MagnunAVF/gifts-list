@@ -5,6 +5,10 @@ describe ProductsAssociationsController, type: :controller do
   let(:product_not_found_message) { /Product not found!/ }
   let(:list_not_found_message) { /List not found!/ }
   let(:category_not_found_message) { /Category not found!/ }
+  let(:product_not_in_list_message) { /Product not in List!/ }
+  let(:product_already_in_list_message) { /Product already in List!/ }
+  let(:product_not_in_category_message) { /Product not in Category!/ }
+  let(:product_already_in_category_message) { /Product already in Category!/ }
 
   context "POST /client/:client_id/add-product-to-list" do
     context "when client exists" do
@@ -33,19 +37,51 @@ describe ProductsAssociationsController, type: :controller do
             }
           }
 
-          it "should return status code 200" do
-            post "/clients/#{client.id}/add-product-to-list", params: params
+          context "when product and list are NOT associated yet" do
+            it "should return status code 200" do
+              post "/clients/#{client.id}/add-product-to-list", params: params
 
-            expect(response.status).to be(200)
+              expect(response.status).to be(200)
+            end
+
+            it "should create correct relation between product and list" do
+              post "/clients/#{client.id}/add-product-to-list", params: params
+
+              list = List.last
+
+              expect(list.products.pluck(:id)).to include(product.id)
+              expect(product.lists.pluck(:id)).to include(list.id)
+            end
           end
 
-          it "should create correct relation between product and list" do
-            post "/clients/#{client.id}/add-product-to-list", params: params
+          context "when product and list are associated yet" do
+            let!(:list) { List.last }
 
-            list = List.last
+            before do
+              list.products << product
+            end
 
-            expect(list.products.pluck(:id)).to include(product.id)
-            expect(product.lists.pluck(:id)).to include(list.id)
+            it "should return status code 422" do
+              post "/clients/#{client.id}/add-product-to-list", params: params
+
+              expect(response.status).to be(422)
+            end
+
+            it "should NOT create relation between product and list" do
+              initial_association_count = ProductListAssociation.all.count
+
+              post "/clients/#{client.id}/add-product-to-list", params: params
+
+              new_association_count = ProductListAssociation.all.count
+
+              expect(initial_association_count).to be(new_association_count)
+            end
+
+            it "should return an ERROR message" do
+              post "/clients/#{client.id}/add-product-to-list", params: params
+
+              expect(response_as_json["message"]).to match(product_already_in_list_message)
+            end
           end
         end
 
@@ -141,20 +177,51 @@ describe ProductsAssociationsController, type: :controller do
             }
           }
 
-          it "should return status code 200" do
-            delete "/clients/#{client.id}/remove-product-from-list", params: params
+          context "when product and list are associated yet" do
+            let!(:list) { List.last }
 
-            expect(response.status).to be(200)
+            before do
+              list.products << product
+            end
+
+            it "should return status code 200" do
+              delete "/clients/#{client.id}/remove-product-from-list", params: params
+
+              expect(response.status).to be(200)
+            end
+
+            it "should delete relation between product and list" do
+              delete "/clients/#{client.id}/remove-product-from-list", params: params
+
+              expect(list.products.pluck(:id)).to_not include(product.id)
+              expect(product.lists.pluck(:id)).to_not include(list.id)
+            end
           end
 
-          it "should create correct relation between product and list" do
-            list = List.last
-            list.products << product
+          context "when product and list are NOT associated yet" do
+            let!(:list) { List.last }
 
-            delete "/clients/#{client.id}/remove-product-from-list", params: params
+            it "should return status code 404" do
+              delete "/clients/#{client.id}/remove-product-from-list", params: params
 
-            expect(list.products.pluck(:id)).to_not include(product.id)
-            expect(product.lists.pluck(:id)).to_not include(list.id)
+              expect(response.status).to be(404)
+            end
+
+            it "should NOT delete relation between product and list" do
+              initial_association_count = ProductListAssociation.all.count
+
+              delete "/clients/#{client.id}/remove-product-from-list", params: params
+
+              new_association_count = ProductListAssociation.all.count
+
+              expect(initial_association_count).to be(new_association_count)
+            end
+
+            it "should return an ERROR message" do
+              delete "/clients/#{client.id}/remove-product-from-list", params: params
+
+              expect(response_as_json["message"]).to match(product_not_in_list_message)
+            end
           end
         end
 
@@ -250,19 +317,51 @@ describe ProductsAssociationsController, type: :controller do
             }
           }
 
-          it "should return status code 200" do
-            post "/clients/#{client.id}/add-product-to-category", params: params
+          context "when product and category are NOT associated yet" do
+            it "should return status code 200" do
+              post "/clients/#{client.id}/add-product-to-category", params: params
 
-            expect(response.status).to be(200)
+              expect(response.status).to be(200)
+            end
+
+            it "should create correct relation between product and category" do
+              post "/clients/#{client.id}/add-product-to-category", params: params
+
+              category = Category.last
+
+              expect(category.products.pluck(:id)).to include(product.id)
+              expect(product.categories.pluck(:id)).to include(category.id)
+            end
           end
 
-          it "should create correct relation between product and category" do
-            post "/clients/#{client.id}/add-product-to-category", params: params
+          context "when product and category are associated yet" do
+            let!(:category) { Category.last }
 
-            category = Category.last
+            before do
+              category.products << product
+            end
 
-            expect(category.products.pluck(:id)).to include(product.id)
-            expect(product.categories.pluck(:id)).to include(category.id)
+            it "should return status code 422" do
+              post "/clients/#{client.id}/add-product-to-category", params: params
+
+              expect(response.status).to be(422)
+            end
+
+            it "should NOT create relation between product and category" do
+              initial_association_count = ProductCategoryAssociation.all.count
+
+              post "/clients/#{client.id}/add-product-to-category", params: params
+
+              new_association_count = ProductCategoryAssociation.all.count
+
+              expect(initial_association_count).to be(new_association_count)
+            end
+
+            it "should return an ERROR message" do
+              post "/clients/#{client.id}/add-product-to-category", params: params
+
+              expect(response_as_json["message"]).to match(product_already_in_category_message)
+            end
           end
         end
 
@@ -358,20 +457,51 @@ describe ProductsAssociationsController, type: :controller do
             }
           }
 
-          it "should return status code 200" do
-            delete "/clients/#{client.id}/remove-product-from-category", params: params
+          context "when product and category are associated yet" do
+            let!(:category) { Category.last }
 
-            expect(response.status).to be(200)
+            before do
+              category.products << product
+            end
+
+            it "should return status code 200" do
+              delete "/clients/#{client.id}/remove-product-from-category", params: params
+
+              expect(response.status).to be(200)
+            end
+
+            it "should delete relation between product and category" do
+              delete "/clients/#{client.id}/remove-product-from-category", params: params
+
+              expect(category.products.pluck(:id)).to_not include(product.id)
+              expect(product.categories.pluck(:id)).to_not include(category.id)
+            end
           end
 
-          it "should create correct relation between product and category" do
-            category = Category.last
-            category.products << product
+          context "when product and category are NOT associated yet" do
+            let!(:category) { Category.last }
 
-            delete "/clients/#{client.id}/remove-product-from-category", params: params
+            it "should return status code 404" do
+              delete "/clients/#{client.id}/remove-product-from-category", params: params
 
-            expect(category.products.pluck(:id)).to_not include(product.id)
-            expect(product.categories.pluck(:id)).to_not include(category.id)
+              expect(response.status).to be(404)
+            end
+
+            it "should NOT delete relation between product and category" do
+              initial_association_count = ProductCategoryAssociation.all.count
+
+              delete "/clients/#{client.id}/remove-product-from-category", params: params
+
+              new_association_count = ProductCategoryAssociation.all.count
+
+              expect(initial_association_count).to be(new_association_count)
+            end
+
+            it "should return an ERROR message" do
+              delete "/clients/#{client.id}/remove-product-from-category", params: params
+
+              expect(response_as_json["message"]).to match(product_not_in_category_message)
+            end
           end
         end
 
