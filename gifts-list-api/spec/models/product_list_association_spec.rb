@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe ProductListAssociation, type: :model do
-  context "When associating a product to a category" do
+  context "When associating a product to a list" do
     it "should set correct references" do
       list = create(:list)
       products = create_list(:product, 7)
