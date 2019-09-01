@@ -49,3 +49,7 @@ RSpec.configure do |config|
     end
   end
 end
+
+def response_as_json
+  JSON.parse(response.body)
+end
