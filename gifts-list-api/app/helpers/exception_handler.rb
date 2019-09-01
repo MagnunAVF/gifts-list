@@ -1,4 +1,5 @@
 module ExceptionHandler
+  include Exceptions
   extend ActiveSupport::Concern
 
   included do
@@ -9,6 +10,12 @@ module ExceptionHandler
     end
 
     rescue_from ActiveRecord::RecordInvalid do |e|
+      json_response({
+        message: e.message,
+      }, :unprocessable_entity)
+    end
+
+    rescue_from NoAttributesToUpdateError do |e|
       json_response({
         message: e.message,
       }, :unprocessable_entity)
