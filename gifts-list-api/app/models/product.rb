@@ -8,4 +8,8 @@ class Product < ApplicationRecord
   has_many :categories, through: :product_category_association
   has_many :product_list_association
   has_many :lists, through: :product_list_association
+
+  def as_json(options = {})
+    super(only: [:id, :name, :price])
+  end
 end
