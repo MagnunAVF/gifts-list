@@ -58,4 +58,16 @@ module Exceptions
       "Product already in Category!"
     end
   end
+
+  class PaginatedObjectsNotFound < StandardError
+    attr_reader :object_name
+
+    def initialize(object_name = "Objects")
+      @object_name = object_name
+    end
+
+    def message
+      "No #{@object_name} registries found for this page !"
+    end
+  end
 end
