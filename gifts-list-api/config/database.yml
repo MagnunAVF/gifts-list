@@ -11,16 +11,10 @@ default: &default
 development:
   <<: *default
   database: <%= ENV['DB_NAME'] || 'gifts-list-api_development' %>
-  host: db
-  username: postgres
-  password:
 
 test:
   <<: *default
   database: gifts-list-api_test
-  host: db
-  username: postgres
-  password:
 
 production:
   <<: *default
