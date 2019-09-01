@@ -48,6 +48,12 @@ RSpec.configure do |config|
       example.run
     end
   end
+
+  config.profile_examples = 10
+
+  config.order = :random
+
+  Kernel.srand config.seed
 end
 
 def response_as_json
