@@ -1,5 +1,5 @@
 class List < ApplicationRecord
-  validates_presence_of :name
+  validates_presence_of :name, :client_id
 
   belongs_to :client
   has_many :product_list_association
