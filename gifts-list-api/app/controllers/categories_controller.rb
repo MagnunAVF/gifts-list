@@ -73,7 +73,7 @@ class CategoriesController < ApplicationController
 
   def client_exists_check
     begin
-      client = Client.find(params[:client_id])
+      Client.find(params[:client_id])
     rescue ActiveRecord::RecordNotFound
       raise ClientNotFoundError
     end
@@ -82,7 +82,7 @@ class CategoriesController < ApplicationController
   def parent_category_exists_check
     if params[:parent_category_id]
       begin
-        client = Category.where(
+        Category.where(
           client: params[:client_id],
         ).find(params[:parent_category_id])
       rescue ActiveRecord::RecordNotFound

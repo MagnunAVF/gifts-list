@@ -71,7 +71,7 @@ class ProductsController < ApplicationController
 
   def client_exists_check
     begin
-      client = Client.find(params[:client_id])
+      Client.find(params[:client_id])
     rescue ActiveRecord::RecordNotFound
       raise ClientNotFoundError
     end
