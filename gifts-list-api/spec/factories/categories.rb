@@ -5,7 +5,8 @@ FactoryBot.define do
 
     trait :with_subcategories do
       after(:create) do |category, evaluator|
-        create_list(:category, Faker::Number.between(from: 2, to: 5), parent_category: category)
+        create_list(:category, Faker::Number.between(from: 2, to: 5),
+                    parent_category: category, client: category.client)
       end
     end
   end
