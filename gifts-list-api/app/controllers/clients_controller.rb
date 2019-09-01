@@ -16,7 +16,7 @@ class ClientsController < ApplicationController
   end
 
   def show
-    id = params[:id]
+    id = params[:client_id]
 
     client = Client.find(id)
 
@@ -24,15 +24,13 @@ class ClientsController < ApplicationController
   end
 
   def create
-    name = params[:name]
-
     client = Client.create!(client_params)
 
     json_response(client, :created)
   end
 
   def delete
-    id = params[:id]
+    id = params[:client_id]
 
     client = Client.find(id)
     client.delete
@@ -41,9 +39,9 @@ class ClientsController < ApplicationController
   end
 
   def update
-    id = params[:id]
+    id = params[:client_id]
 
-    if params.except("id") == {}
+    if params.except("client_id") == {}
       raise NoAttributesToUpdateError
     end
 

@@ -47,14 +47,14 @@ describe ClientsController, type: :controller do
     end
   end
 
-  context "GET /clients/:id" do
+  context "GET /clients/:client_id" do
     before do
       FactoryBot.create(:client)
     end
 
     context "when client exists" do
       it "should return status code 200" do
-        get "/clients/:id", id: Client.last.id
+        get "/clients/:client_id", client_id: Client.last.id
 
         expect(response.status).to be(200)
       end
@@ -62,7 +62,7 @@ describe ClientsController, type: :controller do
       it "should return the required client" do
         client = Client.last
 
-        get "/clients/:id", id: client.id
+        get "/clients/:client_id", client_id: client.id
 
         expect(response_as_json).to eq(client.as_json)
       end
@@ -72,7 +72,7 @@ describe ClientsController, type: :controller do
       let(:invalid_id) { Faker::Number.between(999, 9999) }
 
       before do
-        get "/clients/:id", id: invalid_id
+        get "/clients/:client_id", client_id: invalid_id
       end
 
       it "should return status code 404" do
@@ -134,7 +134,7 @@ describe ClientsController, type: :controller do
     end
   end
 
-  context "DELETE /clients/:id" do
+  context "DELETE /clients/:client_id" do
     before do
       FactoryBot.create_list(:client, 3)
     end
@@ -143,7 +143,7 @@ describe ClientsController, type: :controller do
       let!(:initial_clients_count) { Client.all.count }
 
       it "should return status code 200" do
-        delete "/clients/:id", id: Client.last.id
+        delete "/clients/:client_id", client_id: Client.last.id
 
         expect(response.status).to be(200)
       end
@@ -151,7 +151,7 @@ describe ClientsController, type: :controller do
       it "should delete the client" do
         client = Client.last
 
-        delete "/clients/:id", id: client.id
+        delete "/clients/:client_id", client_id: client.id
 
         expect {
           Client.find(client.id)
@@ -165,7 +165,7 @@ describe ClientsController, type: :controller do
       let(:invalid_id) { Faker::Number.between(999, 9999) }
 
       before do
-        delete "/clients/:id", id: invalid_id
+        delete "/clients/:client_id", client_id: invalid_id
       end
 
       it "should return status code 404" do
@@ -179,7 +179,7 @@ describe ClientsController, type: :controller do
     end
   end
 
-  context "PUT /clients/:id" do
+  context "PUT /clients/:client_id" do
     before do
       FactoryBot.create(:client)
     end
@@ -192,7 +192,7 @@ describe ClientsController, type: :controller do
         }
 
         before do
-          put "/clients/:id", id: client.id, params: valid_attributes
+          put "/clients/:client_id", client_id: client.id, params: valid_attributes
         end
 
         it "should return status code 200" do
@@ -211,7 +211,7 @@ describe ClientsController, type: :controller do
         let(:client) { Client.last }
 
         before do
-          put "/clients/:id", id: client.id, params: no_attributes
+          put "/clients/:client_id", client_id: client.id, params: no_attributes
         end
 
         it "should return status code 422" do
@@ -228,7 +228,7 @@ describe ClientsController, type: :controller do
         let(:client) { Client.last }
 
         before do
-          put "/clients/:id", id: client.id, params: invalid_attributes
+          put "/clients/:client_id", client_id: client.id, params: invalid_attributes
         end
 
         it "should return status code 422" do
@@ -248,7 +248,7 @@ describe ClientsController, type: :controller do
       }
 
       before do
-        put "/clients/:id", id: invalid_id, params: valid_attributes
+        put "/clients/:client_id", client_id: invalid_id, params: valid_attributes
       end
 
       it "should return status code 404" do
