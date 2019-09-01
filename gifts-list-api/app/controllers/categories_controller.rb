@@ -29,6 +29,7 @@ class CategoriesController < ApplicationController
 
   def create
     client_exists_check
+    parent_category_exists_check
 
     category = Category.create!(category_params)
 
@@ -48,6 +49,7 @@ class CategoriesController < ApplicationController
 
   def update
     client_exists_check
+    parent_category_exists_check
 
     id = params[:id]
     client_id = params[:client_id]
@@ -66,7 +68,7 @@ class CategoriesController < ApplicationController
   private
 
   def category_params
-    params.permit(:name, :client_id)
+    params.permit(:name, :client_id, :parent_category_id)
   end
 
   def client_exists_check
@@ -74,6 +76,18 @@ class CategoriesController < ApplicationController
       client = Client.find(params[:client_id])
     rescue ActiveRecord::RecordNotFound
       raise ClientNotFoundError
+    end
+  end
+
+  def parent_category_exists_check
+    if params[:parent_category_id]
+      begin
+        client = Category.where(
+          client: params[:client_id],
+        ).find(params[:parent_category_id])
+      rescue ActiveRecord::RecordNotFound
+        raise ParentCategoryNotFoundError
+      end
     end
   end
 end

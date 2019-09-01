@@ -6,6 +6,7 @@ describe CategoriesController, type: :controller do
   let(:invalid_attributtes_message) { /Validation failed/ }
   let(:update_without_attributes) { /Without attributes to update!/ }
   let(:client_not_found_message) { /Client not found!/ }
+  let(:parent_category_not_found_message) { /Parent Category not found!/ }
 
   context "GET /clients/:client_id/categories" do
     context "when client exists" do
@@ -145,28 +146,103 @@ describe CategoriesController, type: :controller do
       end
 
       context "with valid attributes" do
-        let(:client) { Client.last }
-        let(:valid_attributes) {
-          FactoryBot.build(:category, client_id: client.id).as_json.except("id")
-        }
-        let!(:initial_categories_count) { Category.all.count }
+        context "without parent category" do
+          let(:client) { Client.last }
+          let(:valid_attributes) {
+            FactoryBot.build(
+              :category,
+              client_id: client.id,
+              parent_category_id: nil,
+            ).as_json.except("id")
+          }
+          let!(:initial_categories_count) { Category.all.count }
 
-        before do
-          post "/clients/#{client.id}/categories", params: valid_attributes
+          before do
+            post "/clients/#{client.id}/categories", params: valid_attributes
+          end
+
+          it "should return status code 201" do
+            expect(response.status).to be(201)
+          end
+
+          it "should create a new category" do
+            expect(Category.all.count).to be(initial_categories_count + 1)
+          end
+
+          it "should return the new category" do
+            db_category = Category.last
+
+            expect(response_as_json).to eq(db_category.as_json)
+          end
         end
 
-        it "should return status code 201" do
-          expect(response.status).to be(201)
-        end
+        context "with parent category" do
+          context "when parent category exists" do
+            let!(:client) { Client.last }
+            let!(:category) {
+              FactoryBot.create(
+                :category,
+                client_id: client.id,
+              )
+            }
+            let(:valid_attributes) {
+              FactoryBot.build(
+                :category,
+                client_id: client.id,
+                parent_category_id: category.id,
+              ).as_json.except("id")
+            }
+            let!(:initial_categories_count) { Category.all.count }
 
-        it "should create a new category" do
-          expect(Category.all.count).to be(initial_categories_count + 1)
-        end
+            before do
+              post "/clients/#{client.id}/categories", params: valid_attributes
+            end
 
-        it "should return the new category" do
-          db_category = Category.last
+            it "should return status code 201" do
+              expect(response.status).to be(201)
+            end
 
-          expect(response_as_json).to eq(db_category.as_json)
+            it "should create a new category" do
+              expect(Category.all.count).to be(initial_categories_count + 1)
+            end
+
+            it "should return the new category" do
+              db_category = Category.last
+
+              expect(response_as_json).to eq(db_category.as_json)
+            end
+
+            it "should set correct reference to parent category" do
+              db_category = Category.last
+
+              expect(response_as_json["parent_category_id"]).to eq(db_category.as_json["parent_category_id"])
+            end
+          end
+
+          context "when parent category NOT exists" do
+            let(:client) { Client.last }
+            let(:invalid_category_id) { Faker::Number.between(999, 9999) }
+            let(:valid_attributes) {
+              FactoryBot.build(
+                :category,
+                client_id: client.id,
+                parent_category_id: :invalid_category_id,
+              ).as_json.except("id")
+            }
+            let!(:initial_categories_count) { Category.all.count }
+
+            before do
+              post "/clients/#{client.id}/categories", params: valid_attributes
+            end
+
+            it "should return status code 404" do
+              expect(response.status).to be(404)
+            end
+
+            it "should return an ERROR message" do
+              expect(response_as_json["message"]).to match(parent_category_not_found_message)
+            end
+          end
         end
       end
 
@@ -295,23 +371,90 @@ describe CategoriesController, type: :controller do
         end
 
         context "and with valid attributes" do
-          let!(:category) { create(:category) }
-          let(:valid_attributes) {
-            FactoryBot.build(:category).as_json.except("id")
-          }
+          context "without parent category" do
+            let!(:category) { create(:category) }
+            let(:valid_attributes) {
+              FactoryBot.build(:category).as_json.except("id")
+            }
 
-          before do
-            put "/clients/#{client.id}/categories/:id", id: category.id, params: valid_attributes
+            before do
+              put "/clients/#{client.id}/categories/:id", id: category.id, params: valid_attributes
+            end
+
+            it "should return status code 200" do
+              expect(response.status).to be(200)
+            end
+
+            it "should update the category" do
+              db_category = Category.find(category.id)
+
+              expect(response_as_json).to eq(db_category.as_json)
+            end
           end
 
-          it "should return status code 200" do
-            expect(response.status).to be(200)
-          end
+          context "with parent category" do
+            context "when parent category exists" do
+              let!(:client) { Client.last }
+              let!(:category) {
+                FactoryBot.create(
+                  :category,
+                  client_id: client.id,
+                )
+              }
+              let(:valid_attributes) {
+                FactoryBot.build(
+                  :category,
+                  client_id: client.id,
+                  parent_category_id: category.id,
+                ).as_json.except("id")
+              }
 
-          it "should update the category" do
-            db_category = Category.find(category.id)
+              before do
+                put "/clients/#{client.id}/categories/:id", id: category.id, params: valid_attributes
+              end
 
-            expect(response_as_json).to eq(db_category.as_json)
+              it "should return status code 200" do
+                expect(response.status).to be(200)
+              end
+
+              it "should return the updated category" do
+                db_category = Category.last
+
+                expect(response_as_json).to eq(db_category.as_json)
+              end
+
+              it "should set correct reference to parent category" do
+                db_category = Category.last
+
+                expect(response_as_json["parent_category_id"]).to eq(db_category.as_json["parent_category_id"])
+              end
+            end
+
+            context "when parent category NOT exists" do
+              let!(:category) { create(:category) }
+              let(:client) { Client.last }
+              let(:invalid_category_id) { Faker::Number.between(999, 9999) }
+              let(:valid_attributes) {
+                FactoryBot.build(
+                  :category,
+                  client_id: client.id,
+                  parent_category_id: :invalid_category_id,
+                ).as_json.except("id")
+              }
+              let!(:initial_categories_count) { Category.all.count }
+
+              before do
+                put "/clients/#{client.id}/categories/:id", id: category.id, params: valid_attributes
+              end
+
+              it "should return status code 404" do
+                expect(response.status).to be(404)
+              end
+
+              it "should return an ERROR message" do
+                expect(response_as_json["message"]).to match(parent_category_not_found_message)
+              end
+            end
           end
         end
 

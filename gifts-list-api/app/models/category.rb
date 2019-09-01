@@ -6,4 +6,8 @@ class Category < ApplicationRecord
   has_many :subcategories, class_name: "Category", foreign_key: "parent_category_id"
   has_many :product_category_association
   has_many :products, through: :product_category_association
+
+  def as_json(options = {})
+    super(only: [:id, :name, :parent_category_id])
+  end
 end
