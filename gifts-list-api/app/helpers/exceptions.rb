@@ -10,4 +10,10 @@ module Exceptions
       "Client not found!"
     end
   end
+
+  class ParentCategoryNotFoundError < StandardError
+    def message
+      "Parent Category not found!"
+    end
+  end
 end
