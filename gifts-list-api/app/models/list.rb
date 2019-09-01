@@ -4,4 +4,8 @@ class List < ApplicationRecord
   belongs_to :client
   has_many :product_list_association
   has_many :products, through: :product_list_association
+
+  def as_json(options = {})
+    super(only: [:id, :name])
+  end
 end
