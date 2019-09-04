@@ -1,0 +1,62 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+  }
+  
+  header {
+    height: 80px;
+    width: 100%;
+  }
+  
+  footer {
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    background-color: #222;
+    color: #dddddd;
+    margin-top: 30px;
+  }
+  
+  .footer-text {
+    margin-right: 5px;
+  }
+  
+  .logo {
+    height: 45px;
+  }
+  
+  .main-content {
+    min-height: calc(100vh - 140px) !important;
+    margin-bottom: 10px;
+  }
+  
+  .greetings {
+    height: calc(100vh - 140px) !important;
+  }
+  
+  .button-text {
+    margin-left: 5px;
+  }
+  
+  .users-content {
+    max-width: 80%;
+    margin: auto;
+    margin-top: 30px;
+  }
+  
+  .add-button {
+    float: right;
+  }
+  
+  .card-title {
+    margin-bottom: 30px;
+  }
+  
+  // mobile settings
+  @media only screen and (max-width: 800px) {
+    .users-content {
+      max-width: 100%;
+      margin-top: 30px;
+    }
+  }
