@@ -59,15 +59,9 @@ module Exceptions
     end
   end
 
-  class PaginatedObjectsNotFound < StandardError
-    attr_reader :object_name
-
-    def initialize(object_name = "Objects")
-      @object_name = object_name
-    end
-
+  class PaginatedProductsNotFound < StandardError
     def message
-      "No #{@object_name} registries found for this page !"
+      "No Products registries found for this page!"
     end
   end
 end

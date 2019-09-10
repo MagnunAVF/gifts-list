@@ -6,7 +6,7 @@ module ExceptionHandler
     rescue_from ActiveRecord::RecordNotFound, ParentCategoryNotFoundError,
                 ClientNotFoundError, ProductNotFoundError, ListNotFoundError,
                 CategoryNotFoundError, ProductNotInListError, ProductNotInCategoryError,
-                PaginatedObjectsNotFound do |e|
+                PaginatedProductsNotFound do |e|
       json_response({
         message: e.message,
       }, :not_found)
