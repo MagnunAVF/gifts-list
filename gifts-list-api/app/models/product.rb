@@ -10,6 +10,6 @@ class Product < ApplicationRecord
   has_many :lists, through: :product_list_association
 
   def as_json(options = {})
-    super(only: [:id, :name, :price])
+    super(only: [:id, :name, :price, :description])
   end
 end
