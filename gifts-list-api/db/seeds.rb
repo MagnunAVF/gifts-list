@@ -12,7 +12,7 @@ clients.each do |client|
   puts("Creating lists for client #{client.name} (id: #{client.id}) ...")
   FactoryBot.create_list(:list, Faker::Number.between(from: 3, to: 7), client: client)
   puts("Creating categories and subcategories for client #{client.name} (id: #{client.id}) ...")
-  FactoryBot.create_list(:category, Faker::Number.between(from: 3, to: 10), client: client)
+  FactoryBot.create_list(:category, Faker::Number.between(from: 3, to: 10), :with_subcategories, client: client)
   puts("Creating products for client #{client.name} (id: #{client.id}) ...")
   FactoryBot.create_list(:product, Faker::Number.between(from: 100, to: 300), client: client)
 
