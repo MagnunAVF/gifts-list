@@ -1,23 +1,57 @@
 # Gifts List
 
-## Summary
-Gifts List App.
+This README would normally document whatever steps are necessary to get the application up and running.
 
-## Getting Started
+## API
+### Overview
+The api was made with RubyOnJets. This framework is very similar to rails. In resume, RubyOnJets is "Rails running in an AWS Architecture".
+![Jets Architecture](./images/jets-web-architecture.png)
 
-### Prerequisites
+### Getting Started
 
-### Installing
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Running the locally
+To help run in terminal:
+```
+make help
+```
 
-### API Notes
+#### Prerequisites
+To develop and run api locally, you need to have installed ruby and postgresql in your machine.
+For ruby, look at [rvm](https://rvm.io/) or [rbenv](https://github.com/rbenv/rbenv).
+For postgres, look at [postgresql](https://www.postgresql.org/download/).
+This api runs with ruby 2.5.5 .
 
-### Client Notes
+#### Setup
+Before all, run in terminal:
+```
+make setup
+```
+After this, you need to create a .env.development and .env.test files (see .env.sample file).
 
-## Deployment
+#### Running locally
+After setup, run in terminal:
+```
+make run
+```
+After this, you can access the api in http://localhost:8888/.
 
-## Contributing
+#### Testing
+To run tests, run in terminal:
+```
+make test
+```
+After run tests, you can check tests coverage in gifts-list-api/coverage/index.html or running the command `make test-cov` (in LINUX only).
+
+To develop backend with TDD run:
+```
+make auto-test
+```
+
+### Deployment
+TODO
+
+### Contributing
 
 * Only have to fork the project and make a pull request.
 
@@ -36,4 +70,12 @@ We use [SemVer](http://semver.org/) for versioning.
 
 ## License
 
+Not yet defined.
+
 ## Final Notes
+Future improvements (TODO):
+* Topic 1
+
+Last worked branch: master
+
+Doubts? Problems? send an email to magnunavf@gmail.com
